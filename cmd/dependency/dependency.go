@@ -3,26 +3,34 @@ package dependency
 import (
 
 
-	"github.com/champion19/Flighthours_backend/platform/mysql"
+	mysql"github.com/champion19/Flighthours_backend/platform/mysql"
 	"github.com/champion19/Flighthours_backend/config"
+	"github.com/champion19/Flighthours_backend/core/ports"
+	"github.com/champion19/Flighthours_backend/core/services"
+	repo "github.com/champion19/Flighthours_backend/repositories/employee"
 )
 
 
 
 type Dependencies struct {
-
+	EmployeeService ports.Service
+	EmployeeRepository ports.Repository
 	Config        *config.Config
 }
 
 func Init() (*Dependencies, error) {
 	cfg := config.MustLoadConfig()
 
-	_, err := mysql.GetDB(cfg.Database)
+	db, err := mysql.GetDB(cfg.Database)
 	if err != nil {
 		return nil, err
 	}
+	employeeRepo:=repo.NewRepository(db)
+	employeeService:=services.NewService(employeeRepo)
 
 	return &Dependencies{
+		EmployeeService: employeeService,
+		EmployeeRepository: employeeRepo,
 		Config:        cfg,
 	}, nil
 }
