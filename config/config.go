@@ -6,11 +6,8 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-
 	"github.com/champion19/Flighthours_backend/tools/utils"
 )
-
-
 
 type Config struct {
 	Environment  string       `json:"environment"`
@@ -20,6 +17,7 @@ type Config struct {
 	JWT          JWTConfig    `json:"jwt"`
 	Verification Verification `json:"verification"`
 }
+
 
 type Verification struct {
 	BaseURL string `json:"base_url"`
@@ -34,7 +32,6 @@ type Database struct {
 	Name     string `json:"name"`
 	URL      string `json:"url,omitempty"`
 	SSL      string `json:"ssl,omitempty"`
-	Schema   string `json:"schema"`
 }
 
 type Server struct {
@@ -115,10 +112,12 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("database driver is required")
 	}
 
+
 	if c.Database.URL != "" {
 		slog.Debug("Using database URL connection string")
 		return nil
 	}
+
 
 	requiredFields := map[string]string{
 		"host":     c.Database.Host,
