@@ -3,10 +3,14 @@ package services
 import (
 	"github.com/champion19/Flighthours_backend/core/domain"
 	"github.com/champion19/Flighthours_backend/core/ports"
+	"github.com/champion19/Flighthours_backend/config"
+
 )
 
 type service struct {
 	repository ports.Repository
+	
+	config *config.Config
 }
 
 
