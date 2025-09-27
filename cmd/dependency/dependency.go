@@ -2,7 +2,6 @@ package dependency
 
 import (
 
-
 	mysql"github.com/champion19/Flighthours_backend/platform/mysql"
 	"github.com/champion19/Flighthours_backend/config"
 	"github.com/champion19/Flighthours_backend/core/ports"
@@ -27,7 +26,7 @@ func Init() (*Dependencies, error) {
 		return nil, err
 	}
 	employeeRepo:=repo.NewRepository(db)
-	employeeService:=services.NewService(employeeRepo)
+	employeeService:=services.NewService(employeeRepo,cfg)
 
 	return &Dependencies{
 		EmployeeService: employeeService,

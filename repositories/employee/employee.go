@@ -7,17 +7,17 @@ import( "time"
 
 
 type Employee struct {
-	ID                   string    `json:"id"`
-	Name                 string    `json:"name"`
-	Airline              string    `json:"airline"`
-	Email                string    `json:"email"`
-	Password             string    `json:"password"`
-	Emailconfirmed       bool      `json:"emailconfirmed"`
-	IdentificationNumber string    `json:"identification_number"`
-	Bp                   string    `json:"bp"`
-	StartDate            time.Time `json:"start_date"`
-	EndDate              time.Time `json:"end_date"`
-	Active               bool      `json:"active"`
+	ID                   string    `db:"id"`
+	Name                 string    `db:"name"`
+	Airline              string    `db:"airline"`
+	Email                string    `db:"email"`
+	Password             string    `db:"password"`
+	Emailconfirmed       bool      `db:"emailconfirmed"`
+	IdentificationNumber string    `db:"identification_number"`
+	Bp                   string    `db:"bp"`
+	StartDate            time.Time `db:"start_date"`
+	EndDate              time.Time `db:"end_date"`
+	Active               bool      `db:"active"`
 }
 
 func (e Employee) ToDomain() domain.Employee {
@@ -33,5 +33,21 @@ func (e Employee) ToDomain() domain.Employee {
 		StartDate:            e.StartDate,
 		EndDate:              e.EndDate,
 		Active:               e.Active,
+	}
+}
+
+func FromDomain(d domain.Employee) Employee {
+	return Employee{
+		ID:                   d.ID,
+		Name:                 d.Name,
+		Email:                d.Email,
+		Airline:              d.Airline,
+		Password:             d.Password,
+		Emailconfirmed:       d.Emailconfirmed,
+		IdentificationNumber: d.IdentificationNumber,
+		Bp:                   d.Bp,
+		StartDate:            d.StartDate,
+		EndDate:              d.EndDate,
+		Active:               d.Active,
 	}
 }

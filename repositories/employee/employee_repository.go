@@ -2,19 +2,14 @@ package employee
 
 import (
 	"database/sql"
-	"log"
-	"strings"
-
 	domain "github.com/champion19/Flighthours_backend/core/domain"
 	"github.com/champion19/Flighthours_backend/core/ports"
+	mysql"github.com/go-sql-driver/mysql"
 )
 
 const (
 	querySave                 = "Insert into employee(id,name,airline,email,password,email_confirmed,identification_number,bp,start_date,end_date,active) values(?,?,?,?,?,?,?,?,?,?,?)"
-	queryGetByID              = "Select id,name,airline,email,password,email_confirmed,identification_number,bp,start_date,end_date,active from employee where id=?"
 	QueryByEmail              = "Select id,name,airline,email,password,email_confirmed,identification_number,bp,start_date,end_date,active from employee where email=?"
-	queryUpdateEmailConfirmed = "UPDATE employee SET email_confirmed = ? WHERE id = ?"
-	queryGetAllAirline        = "Select id,airline_name,airline_code from airline where status='active'"
 )
 
 type repository struct {
@@ -22,63 +17,22 @@ type repository struct {
 }
 
 func (r *repository) GetEmployeeByEmail(email string) (*domain.Employee, error) {
-	stmt, err := r.db.Prepare(QueryByEmail)
-	if err != nil {
-		return nil, domain.ErrGettingEmployeeByEmail
-	}
-	defer func() {
-		if err := stmt.Close(); err != nil {
-			log.Printf("failed to close statement: %v", err)
-		}
-	}()
-
-	var employee Employee
-	err = stmt.QueryRow(email).Scan(&employee.ID, &employee.Name, &employee.Airline, &employee.Email, &employee.Password, &employee.Emailconfirmed, &employee.IdentificationNumber, &employee.Bp, &employee.StartDate, &employee.EndDate, &employee.Active)
+	var e Employee
+	err := r.db.QueryRow(QueryByEmail, email).Scan(
+		&e.ID, &e.Name, &e.Airline, &e.Email, &e.Password, &e.Emailconfirmed, &e.IdentificationNumber, &e.Bp, &e.StartDate, &e.EndDate, &e.Active)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, domain.ErrNotFoundEmployeeByEmail
+			return nil, domain.ErrPersonNotFound
 		}
-		return nil, domain.ErrGettingEmployeeByEmail
+		return nil, err
 	}
-
-	employeeDomain := employee.ToDomain()
-	return &employeeDomain, nil
-}
-
-func (r *repository) GetEmployeeByID(id string) (*domain.Employee, error) {
-	stmt, err := r.db.Prepare(queryGetByID)
-	if err != nil {
-		return nil, domain.ErrGetEmployee
-	}
-	defer func() {
-		if err := stmt.Close(); err != nil {
-			log.Printf("failed to close statement: %v", err)
+	d := e.ToDomain()
+	return &d, nil
 		}
-	}()
 
-	var employee Employee
-	err = stmt.QueryRow(id).Scan(
-		&employee.ID,
-		&employee.Name,
-		&employee.Airline,
-		&employee.Email,
-		&employee.Password,
-		&employee.Emailconfirmed,
-		&employee.IdentificationNumber,
-		&employee.Bp,
-		&employee.StartDate,
-		&employee.EndDate,
-		&employee.Active,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, domain.ErrEmployeeCannotFound
-		}
-		return nil, domain.ErrEmployeeCannotGet
-	}
-	employeeDomain := employee.ToDomain()
-	return &employeeDomain, nil
-}
+
+
+
 
 func NewRepository(db *sql.DB) ports.Repository {
 	return &repository{
@@ -101,13 +55,9 @@ func (r *repository) Save(employee domain.Employee) error {
 	}
 	stmt, err := r.db.Prepare(querySave)
 	if err != nil {
-		return domain.ErrEmployeeCannotSave
+		return domain.ErrUserCannotSave
 	}
-	defer func() {
-		if err := stmt.Close(); err != nil {
-			log.Printf("failed to close statement: %v", err)
-		}
-	}()
+	defer stmt.Close()
 
 	_, err = stmt.Exec(
 		employeeToSave.ID,
@@ -123,11 +73,10 @@ func (r *repository) Save(employee domain.Employee) error {
 		employeeToSave.Active,
 	)
 	if err != nil {
-		switch {
-		case strings.Contains(err.Error(), "Duplicate"):
-			return domain.ErrDuplicateEmployee
-		default:
-			return domain.ErrEmployeeCannotSave
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
+			return domain.ErrDuplicateUser
+		} else {
+			return domain.ErrUserCannotSave
 		}
 	}
 
@@ -135,75 +84,6 @@ func (r *repository) Save(employee domain.Employee) error {
 
 }
 
-func (r *repository) UpdateEmailConfirmed(id string, confirmed bool) error {
-	stmt, err := r.db.Prepare(queryUpdateEmailConfirmed)
-	if err != nil {
-		return domain.ErrSavingEmployee
-	}
-	defer func() {
-		if cerr := stmt.Close(); cerr != nil {
-			log.Printf("failed to close statement: %v", cerr)
-		}
-	}()
 
-	result, err := stmt.Exec(confirmed, id)
-	if err != nil {
-		return domain.ErrSavingEmployee
-	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return domain.ErrSavingEmployee
-	}
-
-	if rowsAffected == 0 {
-		return domain.ErrEmployeeCannotFound
-	}
-
-	return nil
-}
-
-func (r *repository) GetAllAirlines() ([]domain.Airline, error) {
-	stmt, err := r.db.Prepare(queryGetAllAirline)
-	if err != nil {
-		log.Printf("Error al preparar la consulta de aerolíneas: %v", err)
-		return nil, domain.ErrAirlineCannotFound
-	}
-	defer func() {
-		if cerr := stmt.Close(); cerr != nil {
-			log.Printf("Error at closing statement: %v", cerr)
-		}
-	}()
-
-	rows, err := stmt.Query()
-	if err != nil {
-		log.Printf("Error at executing the query of airlines: %v", err)
-		return nil, domain.ErrAirlineCannotFound
-	}
-	defer func() {
-		if cerr := rows.Close(); cerr != nil {
-			log.Printf("Error at closing the rows of airlines: %v", cerr)
-		}
-	}()
-
-	var airlines []domain.Airline
-
-	for rows.Next() {
-		var airline domain.Airline
-		if err := rows.Scan(&airline.ID, &airline.Name, &airline.Code); err != nil {
-			log.Printf("Error at scanning airline row: %v", err)
-			return nil, domain.ErrAirlineCannotFound
-		}
-		log.Printf("Aerolínea encontrada: ID=%s, Name=%s, Code=%s", airline.ID, airline.Name, airline.Code)
-		airlines = append(airlines, airline)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Printf("Error at iterating over rows: %v", err)
-		return nil, domain.ErrAirlineCannotFound
-	}
-
-	log.Printf("Total of airlines found: %d", len(airlines))
-	return airlines, nil
-}
 
