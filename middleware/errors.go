@@ -23,6 +23,12 @@ var (
 	ErrValidationUserAlreadyExists = errors.New("user already exists")
 )
 
+type ErrorResponser struct {
+message string
+code int
+
+}
+
 
 func ValidateError(c *gin.Context, err error, details interface{}, statusCode int) {
 	if details == nil {

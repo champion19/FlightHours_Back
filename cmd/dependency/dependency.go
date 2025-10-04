@@ -19,7 +19,10 @@ type Dependencies struct {
 }
 
 func Init() (*Dependencies, error) {
-	cfg := config.MustLoadConfig()
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return nil, err
+	}
 
 	db, err := mysql.GetDB(cfg.Database)
 	if err != nil {

@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	querySave                 = "Insert into employee(id,name,airline,email,password,email_confirmed,identification_number,bp,start_date,end_date,active) values(?,?,?,?,?,?,?,?,?,?,?)"
-	QueryByEmail              = "Select id,name,airline,email,password,email_confirmed,identification_number,bp,start_date,end_date,active from employee where email=?"
+	querySave                 = "INSERT INTO employee(id,name,airline,email,password,email_confirmed,identification_number,bp,start_date,end_date,active) VALUES(?,?,?,?,?,?,?,?,?,?,?)"
+	QueryByEmail              = "Select id,name,airline,email,password,email_confirmed,identification_number,bp,start_date,end_date,active FROM  employee WHERE email=?"
 )
 
 type repository struct {
