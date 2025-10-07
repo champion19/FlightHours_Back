@@ -2,7 +2,6 @@ package dependency
 
 import (
 
-
 	mysql"github.com/champion19/Flighthours_backend/platform/mysql"
 	"github.com/champion19/Flighthours_backend/config"
 	"github.com/champion19/Flighthours_backend/core/ports"
@@ -20,14 +19,20 @@ type Dependencies struct {
 }
 
 func Init() (*Dependencies, error) {
-	cfg := config.MustLoadConfig()
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return nil, err
+	}
 
 	db, err := mysql.GetDB(cfg.Database)
 	if err != nil {
 		return nil, err
 	}
-	employeeRepo:=repo.NewRepository(db)
-	employeeService:=services.NewService(employeeRepo)
+	employeeRepo,err:=repo.NewRepository(db)
+	if err != nil {
+		return nil, err
+	}
+	employeeService:=services.NewService(employeeRepo,cfg)
 
 	return &Dependencies{
 		EmployeeService: employeeService,

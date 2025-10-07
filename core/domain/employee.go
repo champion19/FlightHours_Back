@@ -8,17 +8,17 @@ import (
 )
 
 type Employee struct {
-	ID                   string
-	Name                 string
-	Airline              string
-	Email                string
-	Password             string
-	Emailconfirmed       bool
-	IdentificationNumber string
-	Bp                   string
-	StartDate            time.Time
-	EndDate              time.Time
-	Active               bool
+	ID                   string `json:"id"`
+	Name                 string `json:"name"`
+	Airline              string `json:"airline"`
+	Email                string `json:"email"`
+	Password             string `json:"password"`
+	Emailconfirmed       bool   `json:"emailconfirmed"`
+	IdentificationNumber string `json:"identification_number"`
+	Bp                   string `json:"bp"`
+	StartDate            time.Time `json:"start_date"`
+	EndDate              time.Time `json:"end_date"`
+	Active               bool      `json:"active"`
 }
 
 func (e *Employee) SetID() {

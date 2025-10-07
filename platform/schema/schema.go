@@ -29,7 +29,7 @@ func (f *DefaultFileReader) ReadJsonSchema(resourcePath string) ([]byte, error) 
 		return nil, err
 	}
 
-	data, err := os.Open(filepath.Join(root, "platform/schema/json_schemas", resourcePath))
+	data, err := os.Open(filepath.Join(root, "platform/schema/json_schema", resourcePath))
 	if err != nil {
 		return nil, err
 	}

@@ -11,22 +11,20 @@ import (
 func GetDB(dbConfig config.Database) (*sql.DB, error) {
 	var dsn string
 
-	if dbConfig.URL != "" {
-		dsn = dbConfig.URL
-	} else {
 
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local",
-			dbConfig.Username,
-			dbConfig.Password,
-			dbConfig.Host,
-			dbConfig.Port,
-			dbConfig.Name,
-		)
 
-		if dbConfig.SSL != "" {
-			dsn += "&tls=" + dbConfig.SSL
-		}
+	dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local",
+		dbConfig.Username,
+		dbConfig.Password,
+		dbConfig.Host,
+		dbConfig.Port,
+		dbConfig.Name,
+	)
+
+	if dbConfig.SSL != "" {
+		dsn += "&tls=" + dbConfig.SSL
 	}
+
 
 	db, err := sql.Open(dbConfig.Driver, dsn)
 	if err != nil {

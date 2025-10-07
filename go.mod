@@ -2,10 +2,7 @@ module github.com/champion19/Flighthours_backend
 
 go 1.25
 
-require (
-	github.com/go-playground/validator/v10 v10.27.0
-	github.com/go-sql-driver/mysql v1.9.3
-)
+require github.com/go-sql-driver/mysql v1.9.3
 
 require (
 	github.com/bytedance/sonic v1.14.0 // indirect
@@ -16,6 +13,7 @@ require (
 	github.com/go-json-experiment/json v0.0.0-20250910080747-cc2cfa0554c3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.27.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.18.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

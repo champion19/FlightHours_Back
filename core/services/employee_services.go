@@ -9,14 +9,15 @@ import (
 
 type service struct {
 	repository ports.Repository
-	
+
 	config *config.Config
 }
 
 
-func NewService(repo ports.Repository) ports.Service {
+func NewService(repo ports.Repository,cfg *config.Config) ports.Service {
 	return &service{
 		repository: repo,
+		config: cfg,
 	}
 }
 
@@ -25,9 +26,9 @@ func (s service) GetEmployeeByEmail(email string) (*domain.Employee, error) {
 }
 
 func (s service) RegisterEmployee(employee domain.Employee) (domain.Employee, error) {
-	existingEmployee, err := s.GetEmployeeByEmail(employee.Email)
+	existingEmployee, err := s.repository.GetEmployeeByEmail(employee.Email)
 	if err == nil && existingEmployee != nil {
-		return domain.Employee{}, domain.ErrDuplicateEmployee
+		return domain.Employee{}, domain.ErrDuplicateUser
 	}
 
 	employee.SetID()
