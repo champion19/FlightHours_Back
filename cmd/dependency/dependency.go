@@ -28,7 +28,10 @@ func Init() (*Dependencies, error) {
 	if err != nil {
 		return nil, err
 	}
-	employeeRepo:=repo.NewRepository(db)
+	employeeRepo,err:=repo.NewRepository(db)
+	if err != nil {
+		return nil, err
+	}
 	employeeService:=services.NewService(employeeRepo,cfg)
 
 	return &Dependencies{

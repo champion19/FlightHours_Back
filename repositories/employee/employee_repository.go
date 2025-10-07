@@ -13,12 +13,30 @@ const (
 )
 
 type repository struct {
-	db *sql.DB
+	db         *sql.DB
+	stmtSave   *sql.Stmt
+	stmtGetByEmail *sql.Stmt
+}
+
+func NewRepository(db *sql.DB) (ports.Repository, error) {
+	stmtSave, err := db.Prepare(querySave)
+	if err != nil {
+		return nil, domain.ErrUserCannotSave
+	}
+	stmtGetByEmail,err:=db.Prepare(QueryByEmail)
+	if err != nil {
+		return nil, domain.ErrUserCannotSave
+	}
+	return &repository{
+		db: db,
+		stmtSave: stmtSave,
+		stmtGetByEmail: stmtGetByEmail,
+	}, nil
 }
 
 func (r *repository) GetEmployeeByEmail(email string) (*domain.Employee, error) {
 	var e Employee
-	err := r.db.QueryRow(QueryByEmail, email).Scan(
+	err := r.stmtGetByEmail.QueryRow(email).Scan(
 		&e.ID, &e.Name, &e.Airline, &e.Email, &e.Password, &e.Emailconfirmed, &e.IdentificationNumber, &e.Bp, &e.StartDate, &e.EndDate, &e.Active)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -31,14 +49,6 @@ func (r *repository) GetEmployeeByEmail(email string) (*domain.Employee, error) 
 		}
 
 
-
-
-
-func NewRepository(db *sql.DB) ports.Repository {
-	return &repository{
-		db: db,
-	}
-}
 func (r *repository) Save(employee domain.Employee) error {
 	employeeToSave := Employee{
 		ID:                   employee.ID,
@@ -53,13 +63,8 @@ func (r *repository) Save(employee domain.Employee) error {
 		EndDate:              employee.EndDate,
 		Active:               employee.Active,
 	}
-	stmt, err := r.db.Prepare(querySave)
-	if err != nil {
-		return domain.ErrUserCannotSave
-	}
-	defer stmt.Close()
 
-	_, err = stmt.Exec(
+	_, err := r.stmtSave.Exec(
 		employeeToSave.ID,
 		employeeToSave.Name,
 		employeeToSave.Airline,
@@ -81,9 +86,15 @@ func (r *repository) Save(employee domain.Employee) error {
 	}
 
 	return nil
-
 }
 
-
+func (r *repository) Close() {
+	if r.stmtSave != nil {
+		r.stmtSave.Close()
+	}
+	if r.stmtGetByEmail != nil {
+		r.stmtGetByEmail.Close()
+	}
+}
 
 

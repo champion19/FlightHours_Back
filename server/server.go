@@ -25,13 +25,13 @@ func routing(app *gin.Engine, dependencies *dependency.Dependencies) {
 
 	public := app.Group("/v1/flighthours")
 	{
-	public.POST("/v1/register", validator.WithValidateRegister(),handler.RegisterEmployee())
+	public.POST("/register", validator.WithValidateRegister(),handler.RegisterEmployee())
 	public.GET("/employee/:email", handler.GetEmployeeByEmail())
 	}
 
 }
 
-func Boostrap(app *gin.Engine) *dependency.Dependencies {
+func Bootstrap(app *gin.Engine) *dependency.Dependencies {
 	dependencies, err := dependency.Init()
 	if err != nil {
 		log.Fatal("failed to init dependencies")

@@ -39,7 +39,7 @@ type ResponseEmail struct {
 }
 
 func (e EmployeeRequest) ToDomain() domain.Employee {
-	layout := "2006-01-02T15:04:05.000000"
+	layout := "2006-01-02"
 
 	startDate, err := time.Parse(layout, e.StartDate)
 	if err != nil {
