@@ -2,7 +2,8 @@ package server
 
 import (
 	"log"
-  "log/slog"
+	"log/slog"
+
 	"github.com/champion19/Flighthours_backend/cmd/dependency"
 	"github.com/champion19/Flighthours_backend/handlers"
 	"github.com/champion19/Flighthours_backend/middleware"
@@ -23,10 +24,16 @@ func routing(app *gin.Engine, dependencies *dependency.Dependencies) {
 	}
 	validator := middleware.NewMiddlewareValidator(validators)
 
+	// Rutas públicas (sin autenticación)
 	public := app.Group("/v1/flighthours")
 	{
-	public.POST("/register", validator.WithValidateRegister(),handler.RegisterEmployee())
-	public.GET("/employee/:email", handler.GetEmployeeByEmail())
+		// Registro de usuario
+		public.POST("/register", validator.WithValidateRegister(), handler.RegisterEmployee())
+
+		// Login - devuelve tokens JWT
+		public.POST("/login", handler.LoginEmployee())
+		public.GET("/user/email/:email", handler.GetEmployeeByEmail())
+
 	}
 
 }
@@ -34,6 +41,7 @@ func routing(app *gin.Engine, dependencies *dependency.Dependencies) {
 func Bootstrap(app *gin.Engine) *dependency.Dependencies {
 	dependencies, err := dependency.Init()
 	if err != nil {
+		slog.Error("Failed to initialize dependencies", slog.String("error", err.Error()))
 		log.Fatal("failed to init dependencies")
 		return nil
 	}

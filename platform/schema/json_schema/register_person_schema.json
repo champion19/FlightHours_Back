@@ -34,7 +34,13 @@
       "type": "string",
       "format": "date",
       "description": "End date in ISO 8601 format"
-    }
+    },
+  "role": {
+    "type": "string",
+    "description": "Role of the person",
+    "maxLength": 10,
+    "minLength": 1
+  }
   },
   "required": [
     "name",
@@ -42,7 +48,8 @@
     "password",
     "identificationnumber",
     "start_date",
-    "end_date"
+    "end_date",
+    "role"
   ],
   "additionalProperties": false
 }

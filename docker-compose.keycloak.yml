@@ -5,11 +5,11 @@ services:
     build:
       context: .
       dockerfile: Containerfile
-    image: keycloak-local:latest       
+    image: keycloak-local:latest
     container_name: keycloak-prod
     restart: unless-stopped
     ports:
-      - "8085:8080"   # HTTP (redirect o desarrollo)
+      - "8080:8080"   # HTTP (redirect o desarrollo)
       - "8443:8443"   # HTTPS (modo producción)
       - "9000:9000"   # Health & Metrics
     env_file:
@@ -23,7 +23,7 @@ services:
         reservations:
           memory: 1g
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/health/ready"]
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:9000/health/ready"]
       interval: 15s
       timeout: 5s
       retries: 3

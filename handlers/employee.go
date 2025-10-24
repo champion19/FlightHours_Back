@@ -18,6 +18,7 @@ type EmployeeRequest struct {
 	StartDate            string `json:"start_date"`
 	EndDate              string `json:"end_date"`
 	Active               bool   `json:"active"`
+	Role                 string `json:"role"`
 }
 
 type EmployeeResponse struct {
@@ -31,6 +32,16 @@ type EmployeeResponse struct {
 	StartDate            time.Time `json:"start_date"`
 	EndDate              time.Time `json:"end_date"`
 	Active               bool      `json:"active"`
+	Role                 string    `json:"role,omitempty"`
+	KeycloakUserID       string    `json:"keycloak_user_id,omitempty"`
+}
+
+type RegisterEmployeeResponse struct {
+	User         EmployeeResponse `json:"user"`
+	AccessToken  string           `json:"access_token"`
+	RefreshToken string           `json:"refresh_token"`
+	ExpiresIn    int              `json:"expires_in"`
+	TokenType    string           `json:"token_type"`
 }
 
 type ResponseEmail struct {
@@ -65,5 +76,6 @@ func (e EmployeeRequest) ToDomain() domain.Employee {
 		StartDate:            startDate,
 		EndDate:              endDate,
 		Active:               e.Active,
+		Role:                 e.Role,
 	}
 }
