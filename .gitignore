@@ -69,7 +69,7 @@ bin/
 docs/
 
 # Config files with sensitive data
-.config/local-config.json
+#.config/local-config.json
 
 
 # SSL certificates
@@ -86,5 +86,5 @@ docs/
 
 # Local development
 local/
-local-config.json
-#.config/default-config.json
+
+
