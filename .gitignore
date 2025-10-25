@@ -71,10 +71,8 @@ bin/
 docs/
 
 # Config files with sensitive data
-config/local-config.json
-config/production-config.json
-config/development-config.json
-config/default-config.json
+#.config/local-config.json
+
 
 # SSL certificates
 *.pem
@@ -90,5 +88,5 @@ config/default-config.json
 
 # Local development
 local/
-default-config.json
-config/default-config.json
+
+
